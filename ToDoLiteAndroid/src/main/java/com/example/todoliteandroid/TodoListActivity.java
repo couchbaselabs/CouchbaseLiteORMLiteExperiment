@@ -96,7 +96,7 @@ public class TodoListActivity extends Activity {
         List<TodoLiteTask> fakeList = new ArrayList<TodoLiteTask>(
                 Arrays.asList(new TodoLiteTask("Laundry"), new TodoLiteTask("Dishes"))
         );
-        adapter = new TodoLiteTaskArrayAdapter(this, android.R.layout.simple_list_item_1, fakeList);
+        adapter = new TodoLiteTaskArrayAdapter(this, R.layout.layout_taskrow, R.id.taskRowLabel, fakeList);
         listview.setAdapter(adapter);
     }
 
