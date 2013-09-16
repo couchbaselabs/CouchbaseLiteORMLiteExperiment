@@ -1,5 +1,6 @@
 package com.example.todoliteandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.KeyEvent;
@@ -8,9 +9,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +30,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         createListCreationHandler();
         attachListAdapter();
+        attachListClickListener();
     }
 
     @Override
@@ -57,6 +61,22 @@ public class MainActivity extends Activity {
         List<String> fakeList = new ArrayList<String>(Arrays.asList("Foo List", "Bar List"));
         adapter = new TodoLiteArrayAdapter(this, android.R.layout.simple_list_item_1, fakeList);
         listview.setAdapter(adapter);
+    }
+
+    private void attachListClickListener() {
+        final ListView listview = (ListView) findViewById(R.id.listViewAllTodoLists);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Intent intent = new Intent(MainActivity.this, TodoListActivity.class);
+                Bundle b = new Bundle();
+                String listItem = (String)listview.getItemAtPosition(position);
+                b.putString(TodoListActivity.INTENT_PARAMETER_LIST_NAME, listItem);
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
     }
 
 }
