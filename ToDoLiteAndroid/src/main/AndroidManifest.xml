@@ -22,14 +22,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.example.todoliteandroid.TodoListActivity"
-            android:label="Todo List"
-            android:parentActivityName="com.example.todoliteandroid.MainActivityy" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+        <activity android:name="com.example.todoliteandroid.TodoListActivity"
+            android:label="@string/title_activity_todo_list"
+            android:parentActivityName="com.example.todoliteandroid.MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.todoliteandroid.MainActivity" />
         </activity>
     </application>
 
 </manifest>
+
