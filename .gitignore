@@ -1,0 +1,17 @@
+
+\#*
+*~
+.#*
+\#*\#
+
+ToDoLiteAndroid/build
+
+.DS_Store
+
+local.properties
+
+*.class
+
+.idea
+.gradle
+*.iml
