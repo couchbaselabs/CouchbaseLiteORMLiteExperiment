@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/editTextNewTodoList"
             android:singleLine="true"
-            android:hint="What shall we call your list?"
+            android:hint="Add New List"
             android:layout_gravity="left|center_vertical" />
 
         <ListView

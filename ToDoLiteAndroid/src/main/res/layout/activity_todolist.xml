@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/editTextNewTask"
             android:singleLine="true"
-            android:hint="What shall we call your task?"
+            android:hint="Add New Task"
             android:layout_gravity="left|center_vertical" />
 
         <ListView
