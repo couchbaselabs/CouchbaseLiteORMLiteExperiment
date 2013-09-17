@@ -3,6 +3,7 @@ package com.example.todoliteandroid;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ public class TodoListActivity extends Activity {
 
         setupActionBar(listName);
         attachListAdapter();
+        attachGestureListener();
         createListCreationHandler();
 
     }
@@ -100,6 +102,21 @@ public class TodoListActivity extends Activity {
         listview.setAdapter(adapter);
     }
 
+    private void attachGestureListener() {
+        final ListView listview = (ListView) findViewById(R.id.listViewTodoList);
+        TaskListGestureListener.OnFlingActionListener onFlingListener = new TaskListGestureListener.OnFlingActionListener() {
+            @Override
+            public void deleteItemAtPosition(float x, float y) {
+                int itemId = listview.pointToPosition((int)x,(int)y);
+                TodoLiteTask todoLiteTask = (TodoLiteTask) listview.getAdapter().getItem(itemId);
+                adapter.remove(todoLiteTask);
+            }
+        };
+        TaskListGestureListener listener = new TaskListGestureListener(onFlingListener);
+        GestureDetector gestureDetector = new GestureDetector(this, listener);
+        TaskListTouchListener onTouchListener = new TaskListTouchListener(gestureDetector);
+        listview.setOnTouchListener(onTouchListener);
+    }
 
 
 }

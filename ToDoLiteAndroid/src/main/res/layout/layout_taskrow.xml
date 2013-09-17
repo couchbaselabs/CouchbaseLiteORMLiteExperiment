@@ -16,6 +16,7 @@ android:orientation="horizontal" >
     android:layout_centerVertical="true"
     android:layout_toRightOf="@id/checkBox"
     android:id="@+id/taskRowLabel"
+    android:textSize="24dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@+id/label" >
