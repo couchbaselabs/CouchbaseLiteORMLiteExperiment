@@ -18,6 +18,7 @@ public class TodoLiteTaskArrayAdapter extends ArrayAdapter<TodoLiteTask> {
 
     private final List<TodoLiteTask> list;
     private final Context context;
+    private TodoLiteTaskUpdateListener taskUpdateListener;
 
     public TodoLiteTaskArrayAdapter(Context context, int resource, int textViewResourceId, List<TodoLiteTask> objects) {
         super(context, resource, textViewResourceId, objects);
@@ -49,8 +50,9 @@ public class TodoLiteTaskArrayAdapter extends ArrayAdapter<TodoLiteTask> {
                             TodoLiteTask todoLiteTask = (TodoLiteTask) viewHolder.checkbox
                                     .getTag();
                             todoLiteTask.setSelected(isChecked);
-
-
+                            if (taskUpdateListener != null) {
+                                taskUpdateListener.taskUpdated(todoLiteTask);
+                            }
                         }
                     });
             view.setTag(viewHolder);
@@ -69,5 +71,12 @@ public class TodoLiteTaskArrayAdapter extends ArrayAdapter<TodoLiteTask> {
 
     }
 
+    public void setTaskUpdateListener(TodoLiteTaskUpdateListener taskUpdateListener) {
+        this.taskUpdateListener = taskUpdateListener;
+    }
+
+    public static interface TodoLiteTaskUpdateListener {
+        void taskUpdated(TodoLiteTask task);
+    }
 
 }

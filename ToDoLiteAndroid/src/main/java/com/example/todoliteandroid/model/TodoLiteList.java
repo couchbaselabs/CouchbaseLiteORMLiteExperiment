@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class TodoLiteList {
 
-    @DatabaseField
+    @DatabaseField(id = true)
     private String name;
 
     public TodoLiteList() {

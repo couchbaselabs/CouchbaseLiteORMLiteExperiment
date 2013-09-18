@@ -99,8 +99,19 @@ public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         // uncomment to sort items by a field and limit # of items returned
         // builder.orderBy(TodoLiteTask.DATE_FIELD_NAME, false).limit(30L);
 
-        List<TodoLiteTask> tasks = dao.query(builder.prepare());
+        List<TodoLiteTask> tasks = dao.query(builder.prepare());  // <-- does not scale!!
         adapter = new TodoLiteTaskArrayAdapter(this, R.layout.layout_taskrow, R.id.taskRowLabel, tasks);
+        adapter.setTaskUpdateListener(new TodoLiteTaskArrayAdapter.TodoLiteTaskUpdateListener() {
+            @Override
+            public void taskUpdated(TodoLiteTask task) {  // called back when checkbox clicked
+                try {
+                    Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
+                    dao.update(task);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         listView.setAdapter(adapter);
     }
 
@@ -152,3 +163,4 @@ public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 
 }
+

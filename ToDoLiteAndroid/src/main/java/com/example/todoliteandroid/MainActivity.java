@@ -59,7 +59,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         // uncomment to sort items by a field and limit # of items returned
         // builder.orderBy(TodoLiteTask.DATE_FIELD_NAME, false).limit(30L);
 
-        List<TodoLiteList> list = dao.query(builder.prepare());
+        List<TodoLiteList> list = dao.query(builder.prepare());  // <-- does not scale!!
         adapter = new TodoLiteArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
     }
