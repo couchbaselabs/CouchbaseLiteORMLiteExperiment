@@ -13,11 +13,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.todoliteandroid.db.DatabaseHelper;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     TodoLiteArrayAdapter adapter;
 
