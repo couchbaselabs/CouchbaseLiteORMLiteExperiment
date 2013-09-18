@@ -102,8 +102,8 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                                     int position, long id) {
                 Intent intent = new Intent(MainActivity.this, TodoListActivity.class);
                 Bundle b = new Bundle();
-                String listItem = (String)listview.getItemAtPosition(position);
-                b.putString(TodoListActivity.INTENT_PARAMETER_LIST_NAME, listItem);
+                TodoLiteList listItem = (TodoLiteList)listview.getItemAtPosition(position);
+                b.putString(TodoListActivity.INTENT_PARAMETER_LIST_NAME, listItem.toString());
                 intent.putExtras(b);
                 startActivity(intent);
             }

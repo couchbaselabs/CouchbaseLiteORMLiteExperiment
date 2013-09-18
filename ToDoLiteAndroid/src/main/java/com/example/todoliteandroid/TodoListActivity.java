@@ -14,13 +14,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.todoliteandroid.db.DatabaseHelper;
+import com.example.todoliteandroid.model.TodoLiteList;
 import com.example.todoliteandroid.model.TodoLiteTask;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TodoListActivity extends Activity {
+public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     public static final String INTENT_PARAMETER_LIST_NAME = "INTENT_PARAMETER_LIST_NAME";
     private TodoLiteTaskArrayAdapter adapter;
@@ -34,10 +40,19 @@ public class TodoListActivity extends Activity {
         String listName = b.getString(INTENT_PARAMETER_LIST_NAME);
 
         setupActionBar(listName);
-        attachListAdapter();
         attachGestureListener();
         createListCreationHandler();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            fillList();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -76,15 +91,35 @@ public class TodoListActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void fillList() throws SQLException {
+        final ListView listView = (ListView) findViewById(R.id.listViewTodoList);
+        Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
+        QueryBuilder<TodoLiteTask, Integer> builder = dao.queryBuilder();
+
+        // uncomment to sort items by a field and limit # of items returned
+        // builder.orderBy(TodoLiteTask.DATE_FIELD_NAME, false).limit(30L);
+
+        List<TodoLiteTask> tasks = dao.query(builder.prepare());
+        adapter = new TodoLiteTaskArrayAdapter(this, R.layout.layout_taskrow, R.id.taskRowLabel, tasks);
+        listView.setAdapter(adapter);
+    }
+
     private void createListCreationHandler() {
         final EditText editText = (EditText) findViewById(R.id.editTextNewTask);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     String newTaskName = editText.getText().toString();
-                    adapter.add(new TodoLiteTask(newTaskName));
+                    TodoLiteTask todoLiteTask = new TodoLiteTask(newTaskName);
+                    try {
+                        Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
+                        dao.create(todoLiteTask);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    adapter.add(todoLiteTask);
                     editText.setText("");
                 }
                 return false;
@@ -92,14 +127,6 @@ public class TodoListActivity extends Activity {
         });
     }
 
-    private void attachListAdapter() {
-        final ListView listview = (ListView) findViewById(R.id.listViewTodoList);
-        List<TodoLiteTask> fakeList = new ArrayList<TodoLiteTask>(
-                Arrays.asList(new TodoLiteTask("Laundry"), new TodoLiteTask("Dishes"))
-        );
-        adapter = new TodoLiteTaskArrayAdapter(this, R.layout.layout_taskrow, R.id.taskRowLabel, fakeList);
-        listview.setAdapter(adapter);
-    }
 
     private void attachGestureListener() {
         final ListView listview = (ListView) findViewById(R.id.listViewTodoList);
@@ -108,6 +135,12 @@ public class TodoListActivity extends Activity {
             public void deleteItemAtPosition(float x, float y) {
                 int itemId = listview.pointToPosition((int)x,(int)y);
                 TodoLiteTask todoLiteTask = (TodoLiteTask) listview.getAdapter().getItem(itemId);
+                try {
+                    Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
+                    dao.delete(todoLiteTask);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 adapter.remove(todoLiteTask);
             }
         };
