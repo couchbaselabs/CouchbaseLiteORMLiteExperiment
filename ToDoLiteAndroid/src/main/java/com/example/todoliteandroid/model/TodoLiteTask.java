@@ -1,9 +1,19 @@
-package com.example.todoliteandroid;
+package com.example.todoliteandroid.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable
 public class TodoLiteTask {
 
+    @DatabaseField
     private String name;
+
+    @DatabaseField
     private boolean isSelected;
+
+    public TodoLiteTask() {
+    }
 
     public TodoLiteTask(String name) {
         this.name = name;

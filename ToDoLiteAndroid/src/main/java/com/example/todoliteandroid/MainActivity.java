@@ -1,6 +1,5 @@
 package com.example.todoliteandroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -14,10 +13,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.todoliteandroid.db.DatabaseHelper;
+import com.example.todoliteandroid.model.TodoLiteList;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.SQLException;
 import java.util.List;
 
 public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
@@ -30,8 +31,17 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);  // Remove title bar
         setContentView(R.layout.activity_main);
         createListCreationHandler();
-        attachListAdapter();
         attachListClickListener();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            fillList();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -41,27 +51,47 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         return true;
     }
 
+    private void fillList() throws SQLException {
+        final ListView listView = (ListView) findViewById(R.id.listViewAllTodoLists);
+        Dao<TodoLiteList, Integer> dao = getHelper().getTodoLiteListDao();
+        QueryBuilder<TodoLiteList, Integer> builder = dao.queryBuilder();
+
+        // uncomment to sort items by a field and limit # of items returned
+        // builder.orderBy(TodoLiteTask.DATE_FIELD_NAME, false).limit(30L);
+
+        List<TodoLiteList> list = dao.query(builder.prepare());
+        adapter = new TodoLiteArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(adapter);
+    }
+
+
     private void createListCreationHandler() {
         final EditText editText = (EditText) findViewById(R.id.editTextNewTodoList);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (userHitEnter(actionId, keyEvent)) {
                     String newListName = editText.getText().toString();
-                    adapter.add(newListName);
+                    TodoLiteList todoLiteList = new TodoLiteList(newListName);
+                    try {
+                        Dao<TodoLiteList, Integer> dao = getHelper().getTodoLiteListDao();
+                        dao.create(todoLiteList);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    adapter.add(todoLiteList);
                     editText.setText("");
                 }
                 return false;
             }
-        });
-    }
 
-    private void attachListAdapter() {
-        final ListView listview = (ListView) findViewById(R.id.listViewAllTodoLists);
-        List<String> fakeList = new ArrayList<String>(Arrays.asList("Foo List", "Bar List"));
-        adapter = new TodoLiteArrayAdapter(this, android.R.layout.simple_list_item_1, fakeList);
-        listview.setAdapter(adapter);
+            private boolean userHitEnter(int actionId, KeyEvent keyEvent) {
+                // on the emulator, actionId is 0 for some reason, so look at keyEvent
+                return actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+            }
+
+        });
     }
 
     private void attachListClickListener() {

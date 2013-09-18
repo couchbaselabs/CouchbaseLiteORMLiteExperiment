@@ -10,6 +10,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.example.todoliteandroid.model.TodoLiteTask;
+
 import java.util.List;
 
 public class TodoLiteTaskArrayAdapter extends ArrayAdapter<TodoLiteTask> {
