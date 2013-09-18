@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.todoliteandroid.TodoListActivity"
+        <activity android:name=".TodoLiteTaskListActivity"
             android:label="@string/title_activity_todo_list"
             android:parentActivityName="com.example.todoliteandroid.MainActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"

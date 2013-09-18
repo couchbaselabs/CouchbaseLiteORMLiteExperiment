@@ -100,10 +100,10 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent = new Intent(MainActivity.this, TodoListActivity.class);
+                Intent intent = new Intent(MainActivity.this, TodoLiteTaskListActivity.class);
                 Bundle b = new Bundle();
                 TodoLiteList listItem = (TodoLiteList)listview.getItemAtPosition(position);
-                b.putString(TodoListActivity.INTENT_PARAMETER_LIST_NAME, listItem.toString());
+                b.putString(TodoLiteTaskListActivity.INTENT_PARAMETER_LIST_NAME, listItem.toString());
                 intent.putExtras(b);
                 startActivity(intent);
             }

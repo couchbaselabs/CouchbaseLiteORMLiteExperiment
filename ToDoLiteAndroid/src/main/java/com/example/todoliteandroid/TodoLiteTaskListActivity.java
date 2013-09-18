@@ -26,10 +26,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+public class TodoLiteTaskListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     public static final String INTENT_PARAMETER_LIST_NAME = "INTENT_PARAMETER_LIST_NAME";
     private TodoLiteTaskArrayAdapter adapter;
+    TodoLiteList todoLiteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
         Bundle b = getIntent().getExtras();
         String listName = b.getString(INTENT_PARAMETER_LIST_NAME);
-
+        todoLiteList = new TodoLiteList(listName);
         setupActionBar(listName);
         attachGestureListener();
         createListCreationHandler();
@@ -94,12 +95,11 @@ public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private void fillList() throws SQLException {
         final ListView listView = (ListView) findViewById(R.id.listViewTodoList);
         Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
-        QueryBuilder<TodoLiteTask, Integer> builder = dao.queryBuilder();
+        List<TodoLiteTask> tasks = dao.queryBuilder().where().eq("list_id", todoLiteList.getName()).query();
 
         // uncomment to sort items by a field and limit # of items returned
         // builder.orderBy(TodoLiteTask.DATE_FIELD_NAME, false).limit(30L);
 
-        List<TodoLiteTask> tasks = dao.query(builder.prepare());  // <-- does not scale!!
         adapter = new TodoLiteTaskArrayAdapter(this, R.layout.layout_taskrow, R.id.taskRowLabel, tasks);
         adapter.setTaskUpdateListener(new TodoLiteTaskArrayAdapter.TodoLiteTaskUpdateListener() {
             @Override
@@ -123,7 +123,7 @@ public class TodoListActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     String newTaskName = editText.getText().toString();
-                    TodoLiteTask todoLiteTask = new TodoLiteTask(newTaskName);
+                    TodoLiteTask todoLiteTask = new TodoLiteTask(newTaskName, todoLiteList);
                     try {
                         Dao<TodoLiteTask, Integer> dao = getHelper().getTodoLiteTaskDao();
                         dao.create(todoLiteTask);

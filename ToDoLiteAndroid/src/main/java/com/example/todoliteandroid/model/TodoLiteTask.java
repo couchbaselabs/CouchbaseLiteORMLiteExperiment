@@ -12,11 +12,15 @@ public class TodoLiteTask {
     @DatabaseField
     private boolean isSelected;
 
+    @DatabaseField(canBeNull = false, foreign = true)
+    private TodoLiteList list;
+
     public TodoLiteTask() {
     }
 
-    public TodoLiteTask(String name) {
+    public TodoLiteTask(String name, TodoLiteList list) {
         this.name = name;
+        this.list = list;
     }
 
     public String getName() {
@@ -33,6 +37,14 @@ public class TodoLiteTask {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public TodoLiteList getList() {
+        return list;
+    }
+
+    public void setList(TodoLiteList list) {
+        this.list = list;
     }
 
     @Override
