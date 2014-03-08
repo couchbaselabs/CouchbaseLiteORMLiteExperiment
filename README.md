@@ -1,5 +1,5 @@
-ToDoLiteAndroid
-===============
+CouchbaseLiteORMLiteExperiment
+==============================
 
 Explorations into what an ideal Native API for Couchbase Lite Android should look like.  
 
